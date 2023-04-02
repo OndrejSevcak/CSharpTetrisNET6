@@ -28,8 +28,8 @@ namespace Tetris23.Classes
         private void MoveShapeDown(object sender, System.Timers.ElapsedEventArgs e)
         {
             UI.DrawBoardShape(_board.CurrentShape, clear: true);
-            _state.CurrentGameRow++;
-            _board.CurrentShape.CurrentBoardStartRow = _state.CurrentGameRow;
+            _board.TryMove(Enums.DirectionEnum.Down);
+            _state.CurrentGameRow = _board.CurrentShape.CurrentBoardStartRow;
             UI.DrawBoardShape(_board.CurrentShape);            
         }
 

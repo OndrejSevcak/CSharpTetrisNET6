@@ -61,6 +61,10 @@ namespace Tetris23.Classes
                 case DirectionEnum.Right:
                     break;
                 case DirectionEnum.Down:
+                    if (IsMovePossible(DirectionEnum.Down))
+                    {
+                        CurrentShape.CurrentBoardStartRow++;
+                    }
                     break;
                 default:
                     break;
@@ -73,21 +77,21 @@ namespace Tetris23.Classes
             {
                 case DirectionEnum.Left:
                     if(IsWithingBoard() &&
-                       IsMergePossible(CurrentShape.CurrentBoardStartRow, CurrentShape.CurrentBoardStartCol - 1))
+                       IsMergePossible(CurrentShape, CurrentShape.CurrentBoardStartRow, CurrentShape.CurrentBoardStartCol - 1))
                     {
                         return true;
                     }
                     break;
                 case DirectionEnum.Right:
                     if(IsWithingBoard() &&
-                       IsMergePossible(CurrentShape.CurrentBoardStartRow, CurrentShape.CurrentBoardStartCol + 1))
+                       IsMergePossible(CurrentShape, CurrentShape.CurrentBoardStartRow, CurrentShape.CurrentBoardStartCol + 1))
                     {
                         return true;
                     }
                     break;
                 case DirectionEnum.Down:
                     if(IsNextRowAvailable() &&
-                       IsMergePossible(CurrentShape.CurrentBoardStartRow + 1, CurrentShape.CurrentBoardStartCol))
+                       IsMergePossible(CurrentShape, CurrentShape.CurrentBoardStartRow + 1, CurrentShape.CurrentBoardStartCol))
                     {
                         return true;
                     }
@@ -115,17 +119,26 @@ namespace Tetris23.Classes
             return false;
         }
 
-        public bool IsMergePossible(int targetStartRow, int targetStartCol)
+        public bool IsMergePossible(Shape shape, int targetStartRow, int targetStartCol)
         {
-            //Select target elements, then check value of Occupied member
-            bool targetGridIsNotOccupied
-                = !BoardGrid
-                    .ToEnumerable()
-                    .Where(point => point.row >= targetStartRow && point.row <= targetStartRow + CurrentShape.ShapeGrid.GetLength(0) - 1 &&
-                                    point.col >= targetStartCol && point.col <= targetStartCol + CurrentShape.ShapeGrid.GetLength(1) - 1)
-                    .Any(tp => tp.isOccupied);
+            bool mergeIsPossible = true;
 
-            return targetGridIsNotOccupied;
+            //all cells from the grid that are already occupied by any shape
+            var occupiedBoardCells = BoardGrid.ToEnumerable().Where(cell => cell.isOccupied).ToList();
+
+            //cells that are actually part of the shape type
+            var shapeCells = shape.ShapeGrid.ToEnumerable().Where(cell => cell.isOccupied).ToList().Select(m => new {X = m.row, Y = m.col});
+
+            //check if the new target possition of shape is out of those cells
+            occupiedBoardCells.ForEach((cell) =>
+            {
+                if(shapeCells.Any(a => a.X == cell.row && a.Y == cell.col))
+                {
+                    mergeIsPossible = false;
+                }
+            });
+
+            return mergeIsPossible;
         }
 
 
