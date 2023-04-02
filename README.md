@@ -1,0 +1,1 @@
+Console game using C#10 and .NET6.
