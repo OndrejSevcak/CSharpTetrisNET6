@@ -15,7 +15,7 @@ namespace Tetris23.Extensions
             {
                 for (int col = 0; col < structArray.GetLength(1); col++)
                 {
-                    yield return (row,col,structArray[row, col].IsOccupied);
+                    yield return (row + 1, col + 1, structArray[row, col].IsOccupied);
                 }
             }
         }

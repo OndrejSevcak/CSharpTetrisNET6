@@ -52,7 +52,7 @@ namespace Tetris23.Classes
 
         }
 
-        public void TryMove(DirectionEnum direction)
+        public bool TryMove(DirectionEnum direction)
         {
             switch (direction)
             {
@@ -63,12 +63,17 @@ namespace Tetris23.Classes
                 case DirectionEnum.Down:
                     if (IsMovePossible(DirectionEnum.Down))
                     {
-                        CurrentShape.CurrentBoardStartRow++;
+                        return true;
                     }
-                    break;
+                    else
+                    {
+                        return false;
+                    }
                 default:
                     break;
             }
+
+            return false;
         }
 
         public bool IsMovePossible(DirectionEnum direction)
@@ -76,22 +81,19 @@ namespace Tetris23.Classes
             switch (direction)
             {
                 case DirectionEnum.Left:
-                    if(IsWithingBoard() &&
-                       IsMergePossible(CurrentShape, CurrentShape.CurrentBoardStartRow, CurrentShape.CurrentBoardStartCol - 1))
+                    if(IsMergePossible(CurrentShape, CurrentShape.CurrentBoardStartRow, CurrentShape.CurrentBoardStartCol - 1))
                     {
                         return true;
                     }
                     break;
                 case DirectionEnum.Right:
-                    if(IsWithingBoard() &&
-                       IsMergePossible(CurrentShape, CurrentShape.CurrentBoardStartRow, CurrentShape.CurrentBoardStartCol + 1))
+                    if(IsMergePossible(CurrentShape, CurrentShape.CurrentBoardStartRow, CurrentShape.CurrentBoardStartCol + 1))
                     {
                         return true;
                     }
                     break;
                 case DirectionEnum.Down:
-                    if(IsNextRowAvailable() &&
-                       IsMergePossible(CurrentShape, CurrentShape.CurrentBoardStartRow + 1, CurrentShape.CurrentBoardStartCol))
+                    if(IsMergePossible(CurrentShape, CurrentShape.CurrentBoardStartRow + 1, CurrentShape.CurrentBoardStartCol))
                     {
                         return true;
                     }
@@ -103,36 +105,25 @@ namespace Tetris23.Classes
             return false;
         }
 
-
-        public bool IsNextRowAvailable()
-        {
-            return CurrentShape.CurrentBoardStartRow + CurrentShape.Height == Height ? false : true;    //+1 row is included in currentRow + Height
-        }
-
-        public bool IsWithingBoard()
-        {
-            if(CurrentShape.CurrentBoardStartCol >= 0 &&
-               CurrentShape.CurrentBoardStartCol + CurrentShape.Width - 1 <= Width)
-            {
-                return true;
-            }
-            return false;
-        }
-
         public bool IsMergePossible(Shape shape, int targetStartRow, int targetStartCol)
         {
             bool mergeIsPossible = true;
 
-            //all cells from the grid that are already occupied by any shape
-            var occupiedBoardCells = BoardGrid.ToEnumerable().Where(cell => cell.isOccupied).ToList();
+            //shapes grid cells that are occupied to be placed on the board
+            var shapeCells = shape.ShapeGrid.ToEnumerable().Where(cell => cell.isOccupied).ToList();
 
-            //cells that are actually part of the shape type
-            var shapeCells = shape.ShapeGrid.ToEnumerable().Where(cell => cell.isOccupied).ToList().Select(m => new {X = m.row, Y = m.col});
-
-            //check if the new target possition of shape is out of those cells
-            occupiedBoardCells.ForEach((cell) =>
+            shapeCells.ForEach((cell) =>
             {
-                if(shapeCells.Any(a => a.X == cell.row && a.Y == cell.col))
+                //Are we inside the board?
+                if(cell.row - 1 + targetStartRow > Height ||       
+                   cell.col - 1 + targetStartCol <= 0 ||
+                   cell.col - 1 + targetStartCol > Width)
+                {
+                    mergeIsPossible = false;
+                }
+
+                //Are the target board cells free?
+                if(BoardGrid[targetStartRow - 2 + cell.row - 1, targetStartCol - 1 + cell.col - 1].IsOccupied)  //row and colls are not zero based
                 {
                     mergeIsPossible = false;
                 }
@@ -142,9 +133,17 @@ namespace Tetris23.Classes
         }
 
 
-        public void MergeCurrentShapeIntoBoardContent()
+        public void MergeShapeIntoBoardContent(Shape shape, int targetStartRow, int targetStartCol)
         {
-
+            shape.ShapeGrid
+                    .ToEnumerable()
+                    .Where(cell => cell.isOccupied)
+                    .ToList()
+                    .ForEach((cell) =>
+                    {
+                        BoardGrid[cell.row - 1 + targetStartRow - 1, cell.col - 1 + targetStartCol].IsOccupied = true;
+                        BoardGrid[cell.row - 1 + targetStartRow - 1, cell.col - 1 + targetStartCol].ShapeType = shape.Type;
+                    });
         }
     }
 }

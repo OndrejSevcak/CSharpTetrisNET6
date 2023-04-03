@@ -24,15 +24,15 @@ namespace Tetris23.Classes
 
 
         //public read-write
-        public int CurrentBoardStartRow { get; set; } = 0;
-        public int CurrentBoardStartCol { get; set; } = 0;
+        public int CurrentBoardStartRow { get; set; } = 1;
+        public int CurrentBoardStartCol { get; set; } = 1;
 
 
         //ctor
         public Shape(ShapeTypeEnum type)
         {
-            Type = type;
             ShapeGrid = new GridCell[3, 3];
+            Type = type;
             InitializeGrid();
         }
 

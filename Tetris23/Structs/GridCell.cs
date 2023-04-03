@@ -15,7 +15,7 @@ namespace Tetris23.Structs
     {
         public int X { get; private set; }  
         public int Y { get; private set; }
-        public bool IsOccupied { get; private set; }    //True if this cell represents a Shape
+        public bool IsOccupied { get; set; }    //True if this cell represents a Shape, Or if shape type has been merged into this cell
 
         //Interface members
         public ShapeTypeEnum? ShapeType { get; set; } = null;

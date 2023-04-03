@@ -14,6 +14,7 @@ namespace Tetris23.Services
             var originalLeft = Console.CursorLeft;
             var originalTop = Console.CursorTop;
             var originalColor = Console.BackgroundColor;
+            var foregroungColor = Console.ForegroundColor;
 
             try
             {
@@ -23,6 +24,7 @@ namespace Tetris23.Services
             {
                 Console.SetCursorPosition(originalLeft, originalTop);
                 Console.BackgroundColor = originalColor;
+                Console.ForegroundColor = foregroungColor;
             }
 
         }
@@ -40,12 +42,15 @@ namespace Tetris23.Services
                         if (col == 0 || col == board.Width + 1 || row == board.Height)
                         {
                             Console.BackgroundColor = ConsoleColor.Yellow;
+                            Console.ForegroundColor = ConsoleColor.Black;
+                            Console.Write(row + 1);
                         }
                         else
                         {
                             Console.BackgroundColor = ConsoleColor.Black;
+                            Console.Write(" ");
+
                         }
-                        Console.Write(" ");
                     }
                     Console.Write("\n");
                 }
@@ -60,7 +65,7 @@ namespace Tetris23.Services
                 {
                     for (int col = 0; col < shape.ShapeGrid.GetLength(1); col++)
                     {
-                        Console.SetCursorPosition(col + shape.CurrentBoardStartCol + offsetLeft, row + shape.CurrentBoardStartRow + offsetTop);
+                        Console.SetCursorPosition(col + shape.CurrentBoardStartCol + offsetLeft, row + shape.CurrentBoardStartRow - 1 + offsetTop);
 
                         if (shape.ShapeGrid[row, col].IsOccupied)
                         {

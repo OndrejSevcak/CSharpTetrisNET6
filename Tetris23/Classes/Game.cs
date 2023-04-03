@@ -12,31 +12,44 @@ namespace Tetris23.Classes
     {
         private Board _board;
         private GameState _state;
-
-        private System.Timers.Timer _timer = new System.Timers.Timer(1000);
+        private System.Timers.Timer _timer = new System.Timers.Timer(500);
 
         public Game()
         {
-            _board = new Board(20, 20, Shape.RandomShapeGenerator);
-            _state = new GameState();
-            _timer.Elapsed += MoveShapeDown;
-            _timer.AutoReset = true;
-            _timer.Enabled = true;
             InitializeGame();
+            _timer.Elapsed += MoveShapeDown;
+            _timer.AutoReset = false;
+            _timer.Enabled = true;
         }
 
         private void MoveShapeDown(object sender, System.Timers.ElapsedEventArgs e)
         {
             UI.DrawBoardShape(_board.CurrentShape, clear: true);
-            _board.TryMove(Enums.DirectionEnum.Down);
+            if (!_board.TryMove(Enums.DirectionEnum.Down))
+            {
+                UI.DrawBoardShape(_board.CurrentShape);
+                _board.MergeShapeIntoBoardContent(_board.CurrentShape, _board.CurrentShape.CurrentBoardStartRow, _board.CurrentShape.CurrentBoardStartCol);
+                _board.CreateShapes();
+            }
+            else
+            {
+                _board.CurrentShape.CurrentBoardStartRow++;
+            }
             _state.CurrentGameRow = _board.CurrentShape.CurrentBoardStartRow;
-            UI.DrawBoardShape(_board.CurrentShape);            
+            UI.DrawBoardShape(_board.CurrentShape);
+
+            _timer.Start();
         }
 
         private void InitializeGame()
         {
-            UI.DrawBoard(_board);
+            _board = new Board(20, 20, Shape.RandomShapeGenerator);
+            _state = new GameState();
+
             _board.CreateShapes();
+            _state.CurrentGameRow = _board.CurrentShape.CurrentBoardStartRow;
+
+            UI.DrawBoard(_board);
             UI.DrawBoardShape(_board.CurrentShape);
         }
 
