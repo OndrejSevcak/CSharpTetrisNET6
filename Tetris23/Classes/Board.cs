@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Tetris23.Enums;
 using Tetris23.Exceptions;
 using Tetris23.Extensions;
+using Tetris23.Services;
 using Tetris23.Structs;
 
 namespace Tetris23.Classes
@@ -57,8 +58,20 @@ namespace Tetris23.Classes
             switch (direction)
             {
                 case DirectionEnum.Left:
+                    if (IsMovePossible(DirectionEnum.Left))
+                    {
+                        UI.DrawBoardShape(CurrentShape,clear:true);
+                        CurrentShape.CurrentBoardStartCol--;
+                        UI.DrawBoardShape(CurrentShape);
+                    }
                     break;
                 case DirectionEnum.Right:
+                    if (IsMovePossible(DirectionEnum.Right))
+                    {
+                        UI.DrawBoardShape(CurrentShape, clear: true);
+                        CurrentShape.CurrentBoardStartCol++;
+                        UI.DrawBoardShape(CurrentShape);
+                    }
                     break;
                 case DirectionEnum.Down:
                     if (IsMovePossible(DirectionEnum.Down))
@@ -115,18 +128,18 @@ namespace Tetris23.Classes
             shapeCells.ForEach((cell) =>
             {
                 //Are we inside the board?
-                if(cell.row - 1 + targetStartRow > Height ||       
-                   cell.col - 1 + targetStartCol <= 0 ||
-                   cell.col - 1 + targetStartCol > Width)
+                if(cell.row + targetStartRow >= Height ||       
+                   cell.col + targetStartCol < 0 ||
+                   cell.col + targetStartCol >= Width)
+                {
+                    mergeIsPossible = false;
+                }
+                //Are the target board cells free?
+                else if (BoardGrid[targetStartRow + cell.row, targetStartCol + cell.col].IsOccupied)
                 {
                     mergeIsPossible = false;
                 }
 
-                //Are the target board cells free?
-                if(BoardGrid[targetStartRow - 2 + cell.row - 1, targetStartCol - 1 + cell.col - 1].IsOccupied)  //row and colls are not zero based
-                {
-                    mergeIsPossible = false;
-                }
             });
 
             return mergeIsPossible;
@@ -141,8 +154,8 @@ namespace Tetris23.Classes
                     .ToList()
                     .ForEach((cell) =>
                     {
-                        BoardGrid[cell.row - 1 + targetStartRow - 1, cell.col - 1 + targetStartCol].IsOccupied = true;
-                        BoardGrid[cell.row - 1 + targetStartRow - 1, cell.col - 1 + targetStartCol].ShapeType = shape.Type;
+                        BoardGrid[cell.row + targetStartRow, cell.col + targetStartCol].IsOccupied = true;
+                        BoardGrid[cell.row + targetStartRow, cell.col + targetStartCol].ShapeType = shape.Type;
                     });
         }
     }

@@ -22,9 +22,22 @@ namespace Tetris23.Classes
             _timer.Enabled = true;
         }
 
+        private void InitializeGame()
+        {
+            _board = new Board(21, 21, Shape.RandomShapeGenerator);
+            _state = new GameState();
+
+            _board.CreateShapes();
+            _state.CurrentGameRow = _board.CurrentShape.CurrentBoardStartRow;
+
+            UI.DrawBoard(_board);
+            UI.DrawBoardShape(_board.CurrentShape);
+        }
+
         private void MoveShapeDown(object sender, System.Timers.ElapsedEventArgs e)
         {
             UI.DrawBoardShape(_board.CurrentShape, clear: true);
+
             if (!_board.TryMove(Enums.DirectionEnum.Down))
             {
                 UI.DrawBoardShape(_board.CurrentShape);
@@ -35,24 +48,14 @@ namespace Tetris23.Classes
             {
                 _board.CurrentShape.CurrentBoardStartRow++;
             }
+
             _state.CurrentGameRow = _board.CurrentShape.CurrentBoardStartRow;
             UI.DrawBoardShape(_board.CurrentShape);
 
             _timer.Start();
         }
 
-        private void InitializeGame()
-        {
-            _board = new Board(20, 20, Shape.RandomShapeGenerator);
-            _state = new GameState();
-
-            _board.CreateShapes();
-            _state.CurrentGameRow = _board.CurrentShape.CurrentBoardStartRow;
-
-            UI.DrawBoard(_board);
-            UI.DrawBoardShape(_board.CurrentShape);
-        }
-
+       
         public void Run()
         {
             try
@@ -70,8 +73,10 @@ namespace Tetris23.Classes
                             case ConsoleKey.RightArrow:
                                 _board.TryMove(Enums.DirectionEnum.Right);
                                 break;
-                            case ConsoleKey.DownArrow:
-                                _board.TryMove(Enums.DirectionEnum.Down);
+                            case ConsoleKey.UpArrow:
+                                UI.DrawBoardShape(_board.CurrentShape,clear: true);
+                                _board.CurrentShape.Rotate();
+                                UI.DrawBoardShape(_board.CurrentShape);
                                 break;
                             default:
                                 break;

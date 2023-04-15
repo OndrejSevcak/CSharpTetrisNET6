@@ -24,8 +24,8 @@ namespace Tetris23.Classes
 
 
         //public read-write
-        public int CurrentBoardStartRow { get; set; } = 1;
-        public int CurrentBoardStartCol { get; set; } = 1;
+        public int CurrentBoardStartRow { get; set; } = 0;
+        public int CurrentBoardStartCol { get; set; } = 0;
 
 
         //ctor
@@ -59,6 +59,22 @@ namespace Tetris23.Classes
                 default:
                     break;
             }
+        }
+
+        public void Rotate()
+        {
+            //first row => trird coll
+            //second row => seconnd coll
+            //third row => first coll
+
+            GridCell[,] rotatedGrid = new GridCell[3, 3]
+            {
+                {ShapeGrid[2,0], ShapeGrid[1, 0], ShapeGrid[0,0]},
+                {ShapeGrid[2,1], ShapeGrid[1, 1], ShapeGrid[0,1]},
+                {ShapeGrid[2,2], ShapeGrid[1, 2], ShapeGrid[0,2]}
+            };
+
+            ShapeGrid = rotatedGrid;
         }
 
         private void InitializeGrid()
