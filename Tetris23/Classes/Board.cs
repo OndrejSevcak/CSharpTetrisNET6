@@ -25,11 +25,12 @@ namespace Tetris23.Classes
             InitializeGrid();
         }
 
-
         public Shape CurrentShape { get; set; }
         public Shape NextShape { get; set; }
 
         private Func<Shape> _shapeGenerator;
+
+        private int _occupiedRowLevel; 
 
 
         //Methods
@@ -61,9 +62,7 @@ namespace Tetris23.Classes
 
                     if (IsMovePossible(DirectionEnum.Left))
                     {
-                        UI.DrawBoardShape(CurrentShape,clear:true);
                         CurrentShape.CurrentBoardStartCol--;
-                        UI.DrawBoardShape(CurrentShape);
 
                         return true;
                     }
@@ -75,9 +74,7 @@ namespace Tetris23.Classes
 
                     if (IsMovePossible(DirectionEnum.Right))
                     {
-                        UI.DrawBoardShape(CurrentShape, clear: true);
                         CurrentShape.CurrentBoardStartCol++;
-                        UI.DrawBoardShape(CurrentShape);
 
                         return true;
                     }
@@ -170,6 +167,13 @@ namespace Tetris23.Classes
                         BoardGrid[cell.row + targetStartRow, cell.col + targetStartCol].IsOccupied = true;
                         BoardGrid[cell.row + targetStartRow, cell.col + targetStartCol].ShapeType = shape.Type;
                     });
+
+            _occupiedRowLevel = BoardGrid.ToEnumerable().Where(g => g.isOccupied).Select(s => s.row).Min();
+
+            if(_occupiedRowLevel == 0)
+            {
+                throw new GameOverException("All rows has been occupied");
+            }
         }
 
         public void DropCurrentShape()

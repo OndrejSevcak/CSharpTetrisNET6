@@ -110,5 +110,21 @@ namespace Tetris23.Services
 
             });
         }
+
+        public static void DrawGameOverScreen(int finalScore, int offsetTop = 5, int offsetLeft = 35)
+        {
+            Console.Clear();
+            Console.Clear();
+
+            Console.SetCursorPosition(offsetLeft, offsetTop);
+            Console.BackgroundColor = ConsoleColor.Black;
+            Console.ForegroundColor = ConsoleColor.Red;
+
+            Console.Write(" XXX  !!! GAME OVER  !!! XXX");
+
+            Console.SetCursorPosition(offsetLeft, offsetTop + 3);
+            Console.Write($"Your final Score is {finalScore}");
+
+        }
     }
 }

@@ -18,6 +18,7 @@ namespace Tetris23.Classes
         {
             InitializeGame();
             _timer.Elapsed += MoveShapeDown;
+            _timer.Elapsed += UpdateGameTimer;
             _timer.AutoReset = false;
             _timer.Enabled = true;
         }
@@ -40,21 +41,33 @@ namespace Tetris23.Classes
         {
             UI.DrawBoardShape(_board.CurrentShape, clear: true);
 
-            if (!_board.TryMove(Enums.DirectionEnum.Down))
+            try
             {
+                if (!_board.TryMove(Enums.DirectionEnum.Down))
+                {
+                    UI.DrawBoardShape(_board.CurrentShape);
+                    _board.MergeShapeIntoBoardContent(_board.CurrentShape, _board.CurrentShape.CurrentBoardStartRow, _board.CurrentShape.CurrentBoardStartCol);
+                    _board.CreateShapes();
+                    _state.Score++;
+                }
+                else
+                {
+                    _board.CurrentShape.CurrentBoardStartRow++;
+                }
+
+                _state.CurrentGameRow = _board.CurrentShape.CurrentBoardStartRow;
                 UI.DrawBoardShape(_board.CurrentShape);
-                _board.MergeShapeIntoBoardContent(_board.CurrentShape, _board.CurrentShape.CurrentBoardStartRow, _board.CurrentShape.CurrentBoardStartCol);
-                _board.CreateShapes();
+
+                _timer.Start();
             }
-            else
+            catch (GameOverException ex)
             {
-                _board.CurrentShape.CurrentBoardStartRow++;
-            }
+                //GAME OVER
+                ((System.Timers.Timer)sender).Enabled = false;
+                ((System.Timers.Timer)sender).Elapsed -= UpdateGameTimer;
 
-            _state.CurrentGameRow = _board.CurrentShape.CurrentBoardStartRow;
-            UI.DrawBoardShape(_board.CurrentShape);
-
-            _timer.Start();
+                UI.DrawGameOverScreen(_state.Score);
+            }           
         }
 
        
@@ -70,20 +83,32 @@ namespace Tetris23.Classes
                         switch (pressedKey.Key)
                         {
                             case ConsoleKey.LeftArrow:
+
+                                UI.DrawBoardShape(_board.CurrentShape,clear: true);
                                 _board.TryMove(Enums.DirectionEnum.Left);
+                                UI.DrawBoardShape(_board.CurrentShape);
+
                                 break;
                             case ConsoleKey.RightArrow:
+
+                                UI.DrawBoardShape(_board.CurrentShape, clear: true);
                                 _board.TryMove(Enums.DirectionEnum.Right);
+                                UI.DrawBoardShape(_board.CurrentShape);
+
                                 break;
                             case ConsoleKey.UpArrow:
+
                                 UI.DrawBoardShape(_board.CurrentShape,clear: true);
                                 _board.CurrentShape.Rotate();
                                 UI.DrawBoardShape(_board.CurrentShape);
+
                                 break;
                             case ConsoleKey.DownArrow:
+
                                 UI.DrawBoardShape(_board.CurrentShape, clear: true);
                                 _board.DropCurrentShape();
                                 UI.DrawBoardShape(_board.CurrentShape);
+
                                 break;
                             default:
                                 break;
@@ -94,11 +119,19 @@ namespace Tetris23.Classes
             catch (GameOverException ex)
             {
                 //GAME OVER
+                _timer.Stop();
+                _timer.Elapsed -= UpdateGameTimer;
+                UI.DrawGameOverScreen(_state.Score);
             }
             catch (Exception ex)
             {
 
             }
+        }
+
+        private void UpdateGameTimer(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            UI.DrawScoreAndTime(_state.ElapsedGameTime, _state.Score);
         }
     }
 }
