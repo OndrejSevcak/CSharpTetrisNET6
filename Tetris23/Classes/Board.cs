@@ -58,22 +58,35 @@ namespace Tetris23.Classes
             switch (direction)
             {
                 case DirectionEnum.Left:
+
                     if (IsMovePossible(DirectionEnum.Left))
                     {
                         UI.DrawBoardShape(CurrentShape,clear:true);
                         CurrentShape.CurrentBoardStartCol--;
                         UI.DrawBoardShape(CurrentShape);
+
+                        return true;
                     }
-                    break;
+                    else
+                    {
+                        return false;
+                    }
                 case DirectionEnum.Right:
+
                     if (IsMovePossible(DirectionEnum.Right))
                     {
                         UI.DrawBoardShape(CurrentShape, clear: true);
                         CurrentShape.CurrentBoardStartCol++;
                         UI.DrawBoardShape(CurrentShape);
+
+                        return true;
                     }
-                    break;
+                    else
+                    {
+                        return false;
+                    }
                 case DirectionEnum.Down:
+
                     if (IsMovePossible(DirectionEnum.Down))
                     {
                         return true;
@@ -157,6 +170,16 @@ namespace Tetris23.Classes
                         BoardGrid[cell.row + targetStartRow, cell.col + targetStartCol].IsOccupied = true;
                         BoardGrid[cell.row + targetStartRow, cell.col + targetStartCol].ShapeType = shape.Type;
                     });
+        }
+
+        public void DropCurrentShape()
+        {
+            while (IsMergePossible(CurrentShape, CurrentShape.CurrentBoardStartRow + 1, CurrentShape.CurrentBoardStartCol))
+            {
+                CurrentShape.CurrentBoardStartRow++;
+            }
+            
+            MergeShapeIntoBoardContent(CurrentShape, CurrentShape.CurrentBoardStartRow, CurrentShape.CurrentBoardStartCol);
         }
     }
 }

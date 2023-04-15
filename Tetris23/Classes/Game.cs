@@ -78,6 +78,11 @@ namespace Tetris23.Classes
                                 _board.CurrentShape.Rotate();
                                 UI.DrawBoardShape(_board.CurrentShape);
                                 break;
+                            case ConsoleKey.DownArrow:
+                                UI.DrawBoardShape(_board.CurrentShape, clear: true);
+                                _board.DropCurrentShape();
+                                UI.DrawBoardShape(_board.CurrentShape);
+                                break;
                             default:
                                 break;
                         }
