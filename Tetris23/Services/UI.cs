@@ -81,5 +81,34 @@ namespace Tetris23.Services
                 }
             });          
         }
+
+        public static void DrawHeading(int offsetLeft = 50, int offsetTop = 2)
+        {
+            RestoreOriginalState(() =>
+            {
+                Console.ForegroundColor = ConsoleColor.Yellow;
+
+                Console.SetCursorPosition(offsetLeft, offsetTop);
+                Console.Write("     *** C# TETRIS GAME by Ondrej Sevcak *** ");
+                
+                Console.SetCursorPosition(offsetLeft, offsetTop + 1);
+                Console.Write("-------------------------------------------------");
+
+            });
+        }
+
+        public static void DrawScoreAndTime(TimeSpan elapsedTime, int score = 0, int offsetLeft = 50, int offsetTop = 5)
+        {
+            RestoreOriginalState(() =>
+            {
+                Console.ForegroundColor = ConsoleColor.Yellow;
+
+                Console.SetCursorPosition(offsetLeft, offsetTop);
+
+                string formattedTime = String.Format("{0:hh\\:mm\\:ss}", elapsedTime);
+                Console.Write($"Game time: {formattedTime}        Score: {score}");
+
+            });
+        }
     }
 }

@@ -67,6 +67,8 @@ namespace Tetris23.Classes
             //second row => seconnd coll
             //third row => first coll
 
+            //TODO: Rotate only if there is enough space, like the shape is not on the board border
+
             GridCell[,] rotatedGrid = new GridCell[3, 3]
             {
                 {ShapeGrid[2,0], ShapeGrid[1, 0], ShapeGrid[0,0]},

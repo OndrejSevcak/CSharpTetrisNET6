@@ -32,6 +32,8 @@ namespace Tetris23.Classes
 
             UI.DrawBoard(_board);
             UI.DrawBoardShape(_board.CurrentShape);
+            UI.DrawHeading();
+            UI.DrawScoreAndTime(_state.ElapsedGameTime, 0);
         }
 
         private void MoveShapeDown(object sender, System.Timers.ElapsedEventArgs e)
