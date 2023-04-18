@@ -20,12 +20,20 @@ namespace Tetris23.Structs
         //Interface members
         public ShapeTypeEnum? ShapeType { get; set; } = null;
 
-        
+
         public GridCell(int x, int y, bool isOccupied = false)
         {
             X = x;
             Y = y;
             IsOccupied = isOccupied;
+        }
+
+        public GridCell(int x, int y, ShapeTypeEnum type, bool isOccupied = false)
+        {
+            X = x;
+            Y = y;
+            IsOccupied = isOccupied;
+            ShapeType = type;
         }
     }
 }

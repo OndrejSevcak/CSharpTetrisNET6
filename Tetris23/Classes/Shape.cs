@@ -4,12 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Tetris23.Enums;
+using Tetris23.Interfaces;
 using Tetris23.Structs;
 using Tetris33.Classes;
 
 namespace Tetris23.Classes
 {
-    public class Shape
+    public class Shape : IRotatable
     {
         //members
         public GridCell[,] ShapeGrid { get; private set; }
@@ -61,6 +62,7 @@ namespace Tetris23.Classes
             }
         }
 
+        //IRotatable interface implementation
         public void Rotate()
         {
             //first row => trird coll
@@ -86,31 +88,38 @@ namespace Tetris23.Classes
                 case ShapeTypeEnum.I:
                     ShapeGrid = ShapeConfiguration.ShapeTypeDict[ShapeTypeEnum.I].Grid;
                     Color = ShapeConfiguration.ShapeTypeDict[ShapeTypeEnum.I].Color;
+                    Type = ShapeTypeEnum.I;
                     break;
                 case ShapeTypeEnum.J:
                     ShapeGrid = ShapeConfiguration.ShapeTypeDict[ShapeTypeEnum.J].Grid;
                     Color = ShapeConfiguration.ShapeTypeDict[ShapeTypeEnum.J].Color;
                     Color = ConsoleColor.Red;
+                    Type = ShapeTypeEnum.J;
                     break;
                 case ShapeTypeEnum.L:
                     ShapeGrid = ShapeConfiguration.ShapeTypeDict[ShapeTypeEnum.L].Grid;
                     Color = ShapeConfiguration.ShapeTypeDict[ShapeTypeEnum.L].Color;
+                    Type = ShapeTypeEnum.L;
                     break;
                 case ShapeTypeEnum.S:
                     ShapeGrid = ShapeConfiguration.ShapeTypeDict[ShapeTypeEnum.S].Grid;
                     Color = ShapeConfiguration.ShapeTypeDict[ShapeTypeEnum.S].Color;
+                    Type = ShapeTypeEnum.S;
                     break;
                 case ShapeTypeEnum.Z:
                     ShapeGrid = ShapeConfiguration.ShapeTypeDict[ShapeTypeEnum.Z].Grid;
                     Color = ShapeConfiguration.ShapeTypeDict[ShapeTypeEnum.Z].Color;
+                    Type = ShapeTypeEnum.Z;
                     break;
                 case ShapeTypeEnum.T:
                     ShapeGrid = ShapeConfiguration.ShapeTypeDict[ShapeTypeEnum.T].Grid;
                     Color = ShapeConfiguration.ShapeTypeDict[ShapeTypeEnum.T].Color;
+                    Type = ShapeTypeEnum.T;
                     break;
                 case ShapeTypeEnum.O:
                     ShapeGrid = ShapeConfiguration.ShapeTypeDict[ShapeTypeEnum.O].Grid;
                     Color = ShapeConfiguration.ShapeTypeDict[ShapeTypeEnum.O].Color;
+                    Type = ShapeTypeEnum.O;
                     break;
                 default:
                     break;

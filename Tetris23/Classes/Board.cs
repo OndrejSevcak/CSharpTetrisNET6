@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Tetris23.Delegates;
 using Tetris23.Enums;
 using Tetris23.Exceptions;
 using Tetris23.Extensions;
@@ -29,6 +30,9 @@ namespace Tetris23.Classes
         public Shape NextShape { get; set; }
 
         private Func<Shape> _shapeGenerator;
+
+        public event ShapeMergedToBoard ShapeMergedEvent;
+        public event RowCleared RowClearedEvent;
 
         private int _occupiedRowLevel; 
 
@@ -63,7 +67,6 @@ namespace Tetris23.Classes
                     if (IsMovePossible(DirectionEnum.Left))
                     {
                         CurrentShape.CurrentBoardStartCol--;
-
                         return true;
                     }
                     else
@@ -75,7 +78,6 @@ namespace Tetris23.Classes
                     if (IsMovePossible(DirectionEnum.Right))
                     {
                         CurrentShape.CurrentBoardStartCol++;
-
                         return true;
                     }
                     else
@@ -137,7 +139,7 @@ namespace Tetris23.Classes
 
             shapeCells.ForEach((cell) =>
             {
-                //Are we inside the board?
+                //Are we not inside the board?
                 if(cell.row + targetStartRow >= Height ||       
                    cell.col + targetStartCol < 0 ||
                    cell.col + targetStartCol >= Width)
@@ -166,14 +168,25 @@ namespace Tetris23.Classes
                     {
                         BoardGrid[cell.row + targetStartRow, cell.col + targetStartCol].IsOccupied = true;
                         BoardGrid[cell.row + targetStartRow, cell.col + targetStartCol].ShapeType = shape.Type;
+
+                        if (IsWholeRowOccupied(targetStartRow + cell.row))
+                        {
+                            RowClearedEvent.Invoke(this, new EventArgs());
+                            CleanOccupiedRow(targetStartRow + cell.row);
+                            UI.DrawEmptyBoard(this);
+                            UI.DrawBoardWithShapes(this);
+                        }
                     });
 
             _occupiedRowLevel = BoardGrid.ToEnumerable().Where(g => g.isOccupied).Select(s => s.row).Min();
+
+            ShapeMergedEvent.Invoke(this, new EventArgs());
 
             if(_occupiedRowLevel == 0)
             {
                 throw new GameOverException("All rows has been occupied");
             }
+
         }
 
         public void DropCurrentShape()
@@ -184,6 +197,46 @@ namespace Tetris23.Classes
             }
             
             MergeShapeIntoBoardContent(CurrentShape, CurrentShape.CurrentBoardStartRow, CurrentShape.CurrentBoardStartCol);
+        }
+
+        /// <summary>
+        /// Is the whole board row occupied by tetris shapes? 
+        /// </summary>
+        private bool IsWholeRowOccupied(int targetBoardMergeRow)
+        {
+            return !BoardGrid
+                    .ToEnumerable()
+                    .Where(b => b.row == targetBoardMergeRow)
+                    .Any(c => !c.isOccupied);
+        }
+
+        private void CleanOccupiedRow(int targetRow)
+        {
+            for (int i = targetRow;  i > -1; i--)
+            {
+                if(i == 0)
+                {
+                    //clean the top row
+                    BoardGrid.ToEnumerable2().Where(b => b.row == i).ToList().ForEach((cell) =>
+                    {
+                        cell.isOccupied = false;
+                        cell.type = null;
+                    });
+                    
+                }
+                else
+                {
+                    //set row values from row above(row - 1)
+                    BoardGrid.ToEnumerable2().Where(r => r.row == i).ToList().ForEach((cell) =>
+                    {
+                        //cell.col = stays the same
+                        //cell.row = stays the same
+                        BoardGrid[cell.row, cell.col].IsOccupied = BoardGrid[cell.row - 1, cell.col].IsOccupied;
+                        BoardGrid[cell.row, cell.col].ShapeType = BoardGrid[cell.row - 1, cell.col].ShapeType;
+                    });
+                }
+            }
+            
         }
     }
 }

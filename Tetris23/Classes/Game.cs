@@ -26,15 +26,19 @@ namespace Tetris23.Classes
         private void InitializeGame()
         {
             _board = new Board(21, 21, Shape.RandomShapeGenerator);
+            _board.ShapeMergedEvent += _board_ShapeMergedEvent;
+            _board.RowClearedEvent += _board_RowClearedEvent;
             _state = new GameState();
 
             _board.CreateShapes();
             _state.CurrentGameRow = _board.CurrentShape.CurrentBoardStartRow;
 
-            UI.DrawBoard(_board);
+            UI.DrawEmptyBoard(_board);
             UI.DrawBoardShape(_board.CurrentShape);
+            UI.DrawLog("Game started!", _state.ElapsedGameTime);
             UI.DrawHeading();
             UI.DrawScoreAndTime(_state.ElapsedGameTime, 0);
+            UI.DrawNextShape(_board.NextShape);
         }
 
         private void MoveShapeDown(object sender, System.Timers.ElapsedEventArgs e)
@@ -46,8 +50,15 @@ namespace Tetris23.Classes
                 if (!_board.TryMove(Enums.DirectionEnum.Down))
                 {
                     UI.DrawBoardShape(_board.CurrentShape);
+
                     _board.MergeShapeIntoBoardContent(_board.CurrentShape, _board.CurrentShape.CurrentBoardStartRow, _board.CurrentShape.CurrentBoardStartCol);
+                    
+                    UI.DrawNextShape(_board.NextShape,clear: true);
+
                     _board.CreateShapes();
+
+                    UI.DrawNextShape(_board.NextShape);
+
                     _state.Score++;
                 }
                 else
@@ -133,5 +144,20 @@ namespace Tetris23.Classes
         {
             UI.DrawScoreAndTime(_state.ElapsedGameTime, _state.Score);
         }
+
+        private async Task _board_ShapeMergedEvent(object sender, EventArgs e)
+        {
+            UI.DrawLog("Shape merged to board! + 1 Score point added", _state.ElapsedGameTime);
+            await Task.Delay(2000);
+            UI.DrawLog("", _state.ElapsedGameTime, clear: true);
+        }
+
+        private async Task _board_RowClearedEvent(object sender, EventArgs e)
+        {
+            _state.Score += 20;
+            UI.DrawSpecialMessage("You cleared a whole row!! +20 score points added!");
+            await Task.Delay(3000);
+            UI.DrawSpecialMessage("                                                  ");
+        } 
     }
 }
