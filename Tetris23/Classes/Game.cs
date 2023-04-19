@@ -4,18 +4,21 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Tetris23.Exceptions;
+using Tetris23.Interfaces;
 using Tetris23.Services;
 
 namespace Tetris23.Classes
 {
-    public class Game
+    public class Game : IGame
     {
         private Board _board;
         private GameState _state;
         private System.Timers.Timer _timer = new System.Timers.Timer(500);
+        private readonly IUI_Service UI;
 
-        public Game()
+        public Game(IUI_Service uiService)
         {
+            UI = uiService;
             InitializeGame();
             _timer.Elapsed += MoveShapeDown;
             _timer.Elapsed += UpdateGameTimer;
@@ -25,7 +28,7 @@ namespace Tetris23.Classes
 
         private void InitializeGame()
         {
-            _board = new Board(21, 21, Shape.RandomShapeGenerator);
+            _board = new Board(21, 21, Shape.RandomShapeGenerator, UI);
             _board.ShapeMergedEvent += _board_ShapeMergedEvent;
             _board.RowClearedEvent += _board_RowClearedEvent;
             _state = new GameState();

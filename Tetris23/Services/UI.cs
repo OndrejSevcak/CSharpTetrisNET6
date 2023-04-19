@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Tetris23.Classes;
 using Tetris23.Enums;
+using Tetris23.Interfaces;
 using Tetris33.Classes;
 
 namespace Tetris23.Services
@@ -13,21 +14,21 @@ namespace Tetris23.Services
     /// UI class responsible for drawing to console. 
     /// Will be used by multiple threads so the lock statement is used to ensure that only one thread can access the UI class at a time
     /// </summary>
-    public static class UI
+    public class UI : IUI_Service
     {
-        private static readonly object _lock = new object();
+        private readonly object _lock = new object();
 
         /// <summary>
         /// Implements the lock statement and ensures the original console state is persisted after executing a drawing action delegate
         /// Is used in each drawing method of this UI class
         /// </summary>
-        private static void RestoreOriginalState(Action drawingFunction)
+        private void RestoreOriginalState(Action drawingFunction)
         {
             lock (_lock)
             {
                 var originalLeft = Console.CursorLeft;
                 var originalTop = Console.CursorTop;
-                var originalColor = Console.BackgroundColor;
+                var originalColor = Console.BackgroundColor;                
                 var foregroungColor = Console.ForegroundColor;
 
                 try
@@ -43,7 +44,7 @@ namespace Tetris23.Services
             }
         }
 
-        public static void DrawEmptyBoard(Board board, int offsetLeft = 3, int offsetTop = 3)
+        public void DrawEmptyBoard(Board board, int offsetLeft = 3, int offsetTop = 3)
         {
             RestoreOriginalState(() =>
             {
@@ -68,7 +69,7 @@ namespace Tetris23.Services
             });            
         }
 
-        public static void DrawBoardWithShapes(Board board, int offsetLeft = 3, int offsetTop = 3)
+        public void DrawBoardWithShapes(Board board, int offsetLeft = 3, int offsetTop = 3)
         {
             RestoreOriginalState(() =>
             {
@@ -109,7 +110,7 @@ namespace Tetris23.Services
             });
         }
 
-        public static void DrawBoardShape(Shape shape, int offsetLeft = 4, int offsetTop = 3, bool clear = false)
+        public void DrawBoardShape(Shape shape, int offsetLeft = 4, int offsetTop = 3, bool clear = false)
         {
             RestoreOriginalState(() =>
             {
@@ -137,7 +138,7 @@ namespace Tetris23.Services
             });          
         }
 
-        public static void DrawHeading(int offsetLeft = 50, int offsetTop = 2)
+        public void DrawHeading(int offsetLeft = 50, int offsetTop = 2)
         {
             RestoreOriginalState(() =>
             {
@@ -152,7 +153,7 @@ namespace Tetris23.Services
             });
         }
 
-        public static void DrawScoreAndTime(TimeSpan elapsedTime, int score = 0, int offsetLeft = 50, int offsetTop = 5)
+        public void DrawScoreAndTime(TimeSpan elapsedTime, int score = 0, int offsetLeft = 50, int offsetTop = 5)
         {
             RestoreOriginalState(() =>
             {
@@ -166,7 +167,7 @@ namespace Tetris23.Services
             });
         }
 
-        public static void DrawNextShape(Shape shape, int offsetLeft = 50, int offsetTop = 8, bool clear = false)
+        public void DrawNextShape(Shape shape, int offsetLeft = 50, int offsetTop = 8, bool clear = false)
         {
             RestoreOriginalState(() =>
             {
@@ -177,7 +178,7 @@ namespace Tetris23.Services
             });
         }
 
-        public static void DrawGameOverScreen(int finalScore, int offsetTop = 5, int offsetLeft = 35)
+        public void DrawGameOverScreen(int finalScore, int offsetTop = 5, int offsetLeft = 35)
         {
             Console.Clear();
             Console.Clear();
@@ -193,7 +194,7 @@ namespace Tetris23.Services
 
         }
 
-        public static void DrawLog(string logMessage, TimeSpan elapsedTime, int offsetLeft = 3, int offsetTop = 26, bool clear = false)
+        public void DrawLog(string logMessage, TimeSpan elapsedTime, int offsetLeft = 3, int offsetTop = 26, bool clear = false)
         {
             RestoreOriginalState(() =>
             {
@@ -214,7 +215,7 @@ namespace Tetris23.Services
             });
         }
 
-        public static void DrawSpecialMessage(string message, int offsetLeft = 50, int offsetTop = 18)
+        public void DrawSpecialMessage(string message, int offsetLeft = 50, int offsetTop = 18)
         {
             RestoreOriginalState(() =>
             {

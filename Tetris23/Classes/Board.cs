@@ -7,6 +7,7 @@ using Tetris23.Delegates;
 using Tetris23.Enums;
 using Tetris23.Exceptions;
 using Tetris23.Extensions;
+using Tetris23.Interfaces;
 using Tetris23.Services;
 using Tetris23.Structs;
 
@@ -19,8 +20,11 @@ namespace Tetris23.Classes
         public int Width => BoardGrid.GetLength(0);
         public int Height => BoardGrid.GetLength(1);
 
-        public Board(int width, int height, Func<Shape> shapeGenerator)
+        private readonly IUI_Service UI;
+
+        public Board(int width, int height, Func<Shape> shapeGenerator, IUI_Service uiService)
         {
+            UI = uiService;
             BoardGrid = new GridCell[width, height];
             _shapeGenerator = shapeGenerator;
             InitializeGrid();
