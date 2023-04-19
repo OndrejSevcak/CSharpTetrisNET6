@@ -36,6 +36,7 @@ namespace Tetris23.Classes
             _board.CreateShapes();
             _state.CurrentGameRow = _board.CurrentShape.CurrentBoardStartRow;
 
+            Console.CursorVisible = false;
             UI.DrawEmptyBoard(_board);
             UI.DrawBoardShape(_board.CurrentShape);
             UI.DrawLog("Game started!", _state.ElapsedGameTime);

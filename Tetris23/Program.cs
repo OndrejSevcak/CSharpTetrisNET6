@@ -14,6 +14,3 @@ var serviceProvider = new ServiceCollection()
 IGame game = serviceProvider.GetRequiredService<IGame>();
 game.Run();
 
-
-
-Console.CursorVisible = false;
