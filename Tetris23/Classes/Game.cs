@@ -11,14 +11,17 @@ namespace Tetris23.Classes
 {
     public class Game : IGame
     {
-        private Board _board;
         private GameState _state;
         private System.Timers.Timer _timer = new System.Timers.Timer(500);
         private readonly IUI_Service UI;
+        private readonly IBoard _board;
 
-        public Game(IUI_Service uiService)
+
+        public Game(IUI_Service uiService, IBoard board)
         {
             UI = uiService;
+            _board = board;
+            _board = new Board(21, 21, Shape.RandomShapeGenerator, UI);
             InitializeGame();
             _timer.Elapsed += MoveShapeDown;
             _timer.Elapsed += UpdateGameTimer;
@@ -28,7 +31,6 @@ namespace Tetris23.Classes
 
         private void InitializeGame()
         {
-            _board = new Board(21, 21, Shape.RandomShapeGenerator, UI);
             _board.ShapeMergedEvent += _board_ShapeMergedEvent;
             _board.RowClearedEvent += _board_RowClearedEvent;
             _state = new GameState();
@@ -45,7 +47,7 @@ namespace Tetris23.Classes
             UI.DrawNextShape(_board.NextShape);
         }
 
-        private void MoveShapeDown(object sender, System.Timers.ElapsedEventArgs e)
+        private async void MoveShapeDown(object sender, System.Timers.ElapsedEventArgs e)
         {
             UI.DrawBoardShape(_board.CurrentShape, clear: true);
 
@@ -78,9 +80,12 @@ namespace Tetris23.Classes
             catch (GameOverException ex)
             {
                 //GAME OVER
-                ((System.Timers.Timer)sender).Enabled = false;
-                ((System.Timers.Timer)sender).Elapsed -= UpdateGameTimer;
+                _timer.Enabled = false;
+                _timer.Elapsed -= UpdateGameTimer;
 
+                await Task.Delay(100);
+                
+                UI.DrawLog("Game over", _state.ElapsedGameTime);
                 UI.DrawGameOverScreen(_state.Score);
             }           
         }
@@ -151,9 +156,11 @@ namespace Tetris23.Classes
 
         private async Task _board_ShapeMergedEvent(object sender, EventArgs e)
         {
-            UI.DrawLog("Shape merged to board! + 1 Score point added", _state.ElapsedGameTime);
+            UI.DrawLog("Shape merged to board", _state.ElapsedGameTime);
+            UI.DrawSpecialMessage("Whooah!  + 1 Score added!!!");
             await Task.Delay(2000);
             UI.DrawLog("", _state.ElapsedGameTime, clear: true);
+            UI.DrawSpecialMessage("", clear: true);
         }
 
         private async Task _board_RowClearedEvent(object sender, EventArgs e)

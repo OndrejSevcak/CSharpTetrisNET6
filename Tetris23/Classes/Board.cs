@@ -13,7 +13,7 @@ using Tetris23.Structs;
 
 namespace Tetris23.Classes
 {
-    public class Board
+    public class Board : IBoard
     {
         public GridCell[,] BoardGrid { get; set; }
 

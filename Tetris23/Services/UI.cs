@@ -44,7 +44,7 @@ namespace Tetris23.Services
             }
         }
 
-        public void DrawEmptyBoard(Board board, int offsetLeft = 3, int offsetTop = 3)
+        public void DrawEmptyBoard(IBoard board, int offsetLeft = 3, int offsetTop = 3)
         {
             RestoreOriginalState(() =>
             {
@@ -69,7 +69,7 @@ namespace Tetris23.Services
             });            
         }
 
-        public void DrawBoardWithShapes(Board board, int offsetLeft = 3, int offsetTop = 3)
+        public void DrawBoardWithShapes(IBoard board, int offsetLeft = 3, int offsetTop = 3)
         {
             RestoreOriginalState(() =>
             {
@@ -142,7 +142,7 @@ namespace Tetris23.Services
         {
             RestoreOriginalState(() =>
             {
-                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.ForegroundColor = ConsoleColor.Cyan;
 
                 Console.SetCursorPosition(offsetLeft, offsetTop);
                 Console.Write("     *** C# TETRIS GAME by Ondrej Sevcak *** ");
@@ -178,7 +178,7 @@ namespace Tetris23.Services
             });
         }
 
-        public void DrawGameOverScreen(int finalScore, int offsetTop = 5, int offsetLeft = 35)
+        public void DrawGameOverScreen(int finalScore, int offsetTop = 5, int offsetLeft = 30)
         {
             Console.Clear();
             Console.Clear();
@@ -187,10 +187,15 @@ namespace Tetris23.Services
             Console.BackgroundColor = ConsoleColor.Black;
             Console.ForegroundColor = ConsoleColor.Red;
 
-            Console.Write(" XXX  !!! GAME OVER  !!! XXX");
+            Console.Write("         XXX  !!! GAME OVER  !!! XXX");
+            Console.SetCursorPosition(offsetLeft, offsetTop + 1);
+            Console.Write("______________________________________________");
 
             Console.SetCursorPosition(offsetLeft, offsetTop + 3);
-            Console.Write($"Your final Score is {finalScore}");
+            Console.Write($"           Your FINAL SCORE is {finalScore}");
+
+            Console.SetCursorPosition(offsetLeft, offsetTop + 6);
+            Console.Write($"           Press any key to quit.");
 
         }
 
@@ -209,19 +214,27 @@ namespace Tetris23.Services
                 }
                 else
                 {
-                    Console.Write($"Log:                                                                           ");
+                    Console.Write($"Log:                                                   ");
 
                 }
             });
         }
 
-        public void DrawSpecialMessage(string message, int offsetLeft = 50, int offsetTop = 18)
+        public void DrawSpecialMessage(string message, int offsetLeft = 50, int offsetTop = 18, bool clear = false)
         {
             RestoreOriginalState(() =>
             {
                 Console.SetCursorPosition(offsetLeft, offsetTop);
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.Write($"{message}");
+                Console.ForegroundColor = ConsoleColor.Cyan;
+
+                if (!clear)
+                {
+                    Console.Write($"{message}");
+                }
+                else
+                {
+                    Console.Write("                                                    ");
+                }
             });
         }
     }
